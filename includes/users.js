@@ -1,9 +1,7 @@
-config {
-  type: "view",
-  schema: "dataform_data_sources",
-  tags: ["hourly"]
-}
-
+module.exports = (params) => {
+  return publish("users", {
+    ...params.defaultConfig
+  }).query(ctx => `
 select
   user_id,
   ARRAY_AGG(
@@ -13,6 +11,8 @@ select
   ) [safe_offset(0)] as email,
   min(timestamp) AS first_identified
 from
-  `tada-analytics.javascript.identifies`
+  ${ctx.ref(params.segmentSchema, "identifies")}
 group by
   1
+`)
+}

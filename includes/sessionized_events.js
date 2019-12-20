@@ -1,25 +1,13 @@
-config {
-  type: "table",
-  schema: "dataform_data_sources",
-  tags: ["hourly"],
-  bigquery: {
-    partitionBy: "DATE(timestamp)"
-  }
-}
-
-/*
-This query creates a combined view of tracks and pages from segment data.
-
-Sessions are computed by finding the any session start timestamp denoted by an activity gap of 30 minutes.
-
-Session IDs are assigned to each track or page record using a combination of the session index, user ID, and date.
-*/
+module.exports = (params) => {
+  return publish("sessionized_events", {
+    ...params.defaultConfig
+  }).query(ctx => `
 WITH user_anon_mapping AS (
   SELECT
     anonymous_id,
     ANY_VALUE(user_id) as user_id
   FROM
-    `tada-analytics.javascript.identifies`
+    ${ctx.ref(params.segmentSchema, "identifies")}
   WHERE
     anonymous_id IS NOT NULL
   GROUP BY
@@ -52,7 +40,7 @@ segment_events_combined AS (
       NULL as context_campaign_keyword
     ) AS pages_info
   FROM
-    `tada-analytics.javascript.tracks`
+    ${ctx.ref(params.segmentSchema, "tracks")}
   where
     true
     and timestamp > "2019-01-01"
@@ -83,7 +71,7 @@ segment_events_combined AS (
       context_campaign_keyword
     ) AS pages_info
   FROM
-    `tada-analytics.javascript.pages`
+    ${ctx.ref(params.segmentSchema, "pages")}
   where
     true
     and timestamp > "2019-01-01"
@@ -117,7 +105,7 @@ session_starts AS (
               timestamp ASC
           )
         )
-      ) /(1000 * 60) >= 30,
+      ) >= ${params.sessionTimeoutMillis},
       TRUE
     ) AS session_start_event
   FROM
@@ -153,3 +141,5 @@ SELECT
   *
 FROM
   session_id
+`)
+}
