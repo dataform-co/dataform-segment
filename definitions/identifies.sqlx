@@ -1,0 +1,18 @@
+config {
+  type: "view",
+  schema: "dataform_data_sources",
+  tags: ["hourly"]
+}
+
+select
+  user_id,
+  ARRAY_AGG(
+    email ignore nulls
+    order by
+      timestamp desc
+  ) [safe_offset(0)] as email,
+  min(timestamp) AS first_identified
+from
+  `tada-analytics.javascript.identifies`
+group by
+  1
