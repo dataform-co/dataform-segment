@@ -1,5 +1,5 @@
 module.exports = (params) => {
-  return publish("sessionized_events", {
+  return publish("segment_sessionized_events", {
     ...params.defaultConfig
   }).query(ctx => `
 WITH user_anon_mapping AS (

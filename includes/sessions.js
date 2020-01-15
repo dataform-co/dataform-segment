@@ -1,5 +1,5 @@
 module.exports = (params) => {
-  return publish("sessions", {
+  return publish("segment_sessions", {
     bigquery: {
       partitionBy: "DATE(session_start_timestamp)"
     },
@@ -35,7 +35,7 @@ select
     )
   ) as records
 from
-  ${ctx.ref(params.defaultConfig.schema, "sessionized_events")}
+  ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")}
 group by
   session_id,
   session_index

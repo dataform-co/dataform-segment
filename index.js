@@ -17,19 +17,19 @@ module.exports = (params) => {
     segmentSchema
   } = params;
   // Declare the source segment tables.
-  declare({
+  const identifies = declare({
     ...defaultConfig,
     schema: segmentSchema,
     name: "identifies"
   });
 
-  declare({
+  const pages = declare({
     ...defaultConfig,
     schema: segmentSchema,
     name: "pages"
   });
 
-  declare({
+  const tracks = declare({
     ...defaultConfig,
     schema: segmentSchema,
     name: "tracks"
@@ -37,6 +37,9 @@ module.exports = (params) => {
 
   // Publish and return datasets.
   return {
+    identifies,
+    pages,
+    tracks,
     users: users(params),
     sessionizedEvents: sessionizedEvents(params),
     sessions: sessions(params),

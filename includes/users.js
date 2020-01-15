@@ -1,5 +1,5 @@
 module.exports = (params) => {
-  return publish("users", {
+  return publish("segment_users", {
     ...params.defaultConfig
   }).query(ctx => `
 select
