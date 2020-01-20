@@ -14,67 +14,9 @@ WITH user_anon_mapping AS (
     1
 ),
 segment_events_combined AS (
-  SELECT
-    timestamp,
-    user_id,
-    anonymous_id,
-    context_ip,
-    context_page_url,
-    context_page_path,
-    STRUCT(id as track_id, event) AS tracks_info,
-    STRUCT(
-      NULL AS page_id,
-      NULL AS url,
-      NULL AS referrer,
-      NULL AS url_hash,
-      NULL AS title,
-      NULL as name,
-      NULL as search,
-      NULL as path,
-      NULL as category,
-      NULL as context_campaign_content,
-      NULL as context_campaign_medium,
-      NULL as context_campaign_source,
-      NULL as context_campaign_name,
-      NULL as context_campaign_term,
-      NULL as context_campaign_keyword
-    ) AS pages_info
-  FROM
-    ${ctx.ref(params.segmentSchema, "tracks")}
-  where
-    true
-    and timestamp > "2019-01-01"
+  SELECT * FROM ${params.segmentSchema, ctx.ref("segment_track_events")}
   UNION ALL
-  SELECT
-    timestamp,
-    user_id,
-    anonymous_id,
-    context_ip,
-    context_page_url,
-    context_page_path,
-    STRUCT(NULL AS track_id, NULL AS event) AS tracks_info,
-    STRUCT(
-      id,
-      url,
-      referrer,
-      url_hash,
-      title,
-      name,
-      search,
-      path,
-      category,
-      context_campaign_content,
-      context_campaign_medium,
-      context_campaign_source,
-      context_campaign_name,
-      context_campaign_term,
-      context_campaign_keyword
-    ) AS pages_info
-  FROM
-    ${ctx.ref(params.segmentSchema, "pages")}
-  where
-    true
-    and timestamp > "2019-01-01"
+  SELECT * FROM ${params.segmentSchema, ctx.ref("segment_page_events")}
 ),
 segment_events_mapped AS (
   SELECT

@@ -3,12 +3,16 @@ const settings = {
   segmentSchema: "javascript",
   sessionTimeoutMillis: 30 * 60 * 1000,
   outputSchema: "segment_package",
-  tags: ["segment"]
+  tags: ["segment"],
+  customPageFields: [],
+  customTrackFields: [],
 }
 
 const users = require("./includes/users");
 const sessionizedEvents = require("./includes/sessionized_events");
 const sessions = require("./includes/sessions");
+const pageEvents = require("./includes/page_events");
+const trackEvents = require("./includes/track_events");
 
 module.exports = (params) => {
 
@@ -43,5 +47,7 @@ module.exports = (params) => {
     users: users(params),
     sessionizedEvents: sessionizedEvents(params),
     sessions: sessions(params),
+    pageEvents: pageEvents(params),
+    trackEvents: trackEvents(params),
   }
 }
