@@ -13,7 +13,7 @@ Add the following to your `package.json` file in your Dataform project:
 }
 ```
 
-Previous releases can be installed from the [releases page](releases).
+Previous releases can be installed from the [releases page](https://github.com/dataform-co/dataform-segment/releases).
 
 ## Configure the package
 
@@ -36,7 +36,7 @@ segment({
 });
 ```
 
-For more advanced uses cases, see the [example.js](blob/master/definitions/example.js).
+For more advanced uses cases, see the [example.js](https://github.com/dataform-co/dataform-segment/blob/master/definitions/example.js).
 
 ## Tables
 
