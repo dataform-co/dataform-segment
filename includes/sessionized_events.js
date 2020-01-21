@@ -3,20 +3,7 @@ module.exports = (params) => {
     ...params.defaultConfig
   }).query(ctx => `
 
-with user_anon_mapping as (
--- for each anonymous_id, find a user_id mapped to it (if one exists)
-select
-  anonymous_id,
-  any_value(user_id) as user_id
-from
-  ${ctx.ref(params.segmentSchema, "identifies")}
-where
-  anonymous_id is not null
-group by
-  anonymous_id
-),
-
-segment_events_combined as (
+with segment_events_combined as (
 -- combine page and track tables into a full events table
 select * from ${params.segmentSchema, ctx.ref("segment_track_events")}
 union all
@@ -29,7 +16,7 @@ select
   timestamp,
   coalesce(
     segment_events_combined.user_id,
-    user_anon_mapping.user_id,
+    segment_user_anonymous_map.user_id,
     segment_events_combined.anonymous_id
   ) as user_id,
   context_ip,
@@ -39,7 +26,8 @@ select
   pages_info
 from
   segment_events_combined
-  left join user_anon_mapping on segment_events_combined.anonymous_id = user_anon_mapping.anonymous_id
+  left join ${ctx.ref(params.defaultConfig.schema, "segment_user_anonymous_map")} as segment_user_anonymous_map
+    on segment_events_combined.anonymous_id = segment_user_anonymous_map.anonymous_id
 ),
 
 session_starts as (

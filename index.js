@@ -3,6 +3,7 @@ const sessionizedEvents = require("./includes/sessionized_events");
 const sessions = require("./includes/sessions");
 const pageEvents = require("./includes/page_events");
 const trackEvents = require("./includes/track_events");
+const userMap = require("./includes/user_anonymous_map");
 
 module.exports = (params) => {
 
@@ -39,5 +40,6 @@ module.exports = (params) => {
     sessions: sessions(params),
     pageEvents: pageEvents(params),
     trackEvents: trackEvents(params),
+    userMap: userMap(params),
   }
 }
