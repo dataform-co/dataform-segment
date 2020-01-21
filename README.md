@@ -11,7 +11,11 @@ Common data models for segment data such as `sessions` and a user roll up table 
 Add the following to your `package.json` file in your Dataform project:
 ```json
 {
-    "dataform-segment": "git+https://github.com/dataform-co/dataform-segment.git#4e1e51526177bcc5e655d63c8d8fec971492f206"
+    "dependencies": {
+        "@dataform/core": "1.4.7",
+        "dataform-segment": "git+https://github.com/dataform-co/dataform-segment.git#4e1e51526177bcc5e655d63c8d8fec971492f206",
+        ...
+    }
 }
 ```
 
