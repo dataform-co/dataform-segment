@@ -33,7 +33,7 @@ segment({
   defaultConfig: {
     schema: "dataform_segment",
     tags: ["segment"],
-    type: "table"
+    type: "view"
   },
   // list of custom fields to extract from the pages table
   customPageFields: ["url_hash", "category"],
