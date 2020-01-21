@@ -1,8 +1,5 @@
 module.exports = (params) => {
   return publish("segment_sessions", {
-    bigquery: {
-      partitionBy: "date(session_start_timestamp)"
-    },
     description: "Sessions contain a combined view of tracks and pages from segment. Each session is a period of sustained activity, with a new session starting after a 30min+ period of inactivity. Each session contains a repeated field of records which are either tracks or pages. Common fields are extracted out into the top level and type specific fields are kept within two structs: records.track and records.page",
     columns: {
       session_id: "Unique identifier of the session",
