@@ -34,7 +34,14 @@ segment({
     schema: "dataform_segment",
     tags: ["segment"],
     type: "table"
-  }
+  },
+  // list of custom fields to extract from the pages table
+  customPageFields: ["url_hash", "category"],
+  // list of custom fields to extract from the identifies table
+  customUserFields: ["email", "name", "company_name", "created_at"],
+  // list of custom fields to extract from the tracks table
+  customerTrackFields: ["browser_type"]
+  
 });
 ```
 

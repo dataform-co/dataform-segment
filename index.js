@@ -7,10 +7,20 @@ const userMap = require("./includes/user_anonymous_map");
 
 module.exports = (params) => {
 
+  params = {
+    segmentSchema: "javascript", // schema that Segment writes tables into
+    sessionTimeoutMillis: 30 * 60 * 1000, // Session timeout in milliseconds
+    customPageFields: [], // list of custom fields to extract from the pages table
+    customUserFields: [], // list of custom fields to extract from the identifies table
+    customTrackFields: [], // list of custom fields to extract from the tracks table
+    ...params
+  };
+
   const {
     defaultConfig,
     segmentSchema
   } = params;
+  
   // Declare the source segment tables.
   const identifies = declare({
     ...defaultConfig,
