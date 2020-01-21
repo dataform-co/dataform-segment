@@ -15,7 +15,8 @@ const {
     type: "view"
   },
   customPageFields: ["url_hash", "category"],
-  customTrackFields: [] // TODO: why isn't it possible to leave this out?
+  customTrackFields: [],
+  customUserFields: ["email", "name", "company_name", "created_at"],
 });
 
 // Override the sessions table type to "table".

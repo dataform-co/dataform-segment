@@ -14,8 +14,8 @@ SELECT
     ${[...common.TRACK_FIELDS, ...params.customTrackFields].join(",\n")}
   ) AS tracks_info,
   STRUCT(
-    NULL AS page_id,
-    NULL AS ${[...common.PAGE_FIELDS, ...params.customPageFields].join(",\n NULL AS ")}
+    cast(null as string) AS page_id,
+    cast(null as string) as ${[...common.PAGE_FIELDS, ...params.customPageFields].join(",\n cast(null as string) as ")}
   ) AS pages_info
 FROM
   ${ctx.ref(params.segmentSchema, "tracks")}

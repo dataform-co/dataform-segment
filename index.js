@@ -1,13 +1,3 @@
-const settings = {
-  database: "tada-analytics",
-  segmentSchema: "javascript",
-  sessionTimeoutMillis: 30 * 60 * 1000,
-  outputSchema: "segment_package",
-  tags: ["segment"],
-  customPageFields: [],
-  customTrackFields: [],
-}
-
 const users = require("./includes/users");
 const sessionizedEvents = require("./includes/sessionized_events");
 const sessions = require("./includes/sessions");

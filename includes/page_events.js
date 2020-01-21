@@ -10,8 +10,8 @@ context_ip,
 context_page_url,
 context_page_path,
 STRUCT(
-  NULL AS track_id, 
-  NULL AS ${[...common.TRACK_FIELDS, ...params.customTrackFields].join(",\n NULL AS ")}
+  cast(null as string) AS track_id, 
+  cast(null as string) as ${[...common.TRACK_FIELDS, ...params.customTrackFields].join(",\n cast(null as string) as ")}
 ) AS tracks_info,
 STRUCT(
     id as page_id,

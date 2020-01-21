@@ -4,12 +4,8 @@ module.exports = (params) => {
   }).query(ctx => `
 select
   user_id,
-  ARRAY_AGG(
-    email ignore nulls
-    order by
-      timestamp desc
-  ) [safe_offset(0)] as email,
-  min(timestamp) AS first_identified
+  min(timestamp) AS first_seen_at,
+  ${params.customUserFields.map(f=>`array_agg(${f} ignore nulls order by timestamp desc)[safe_offset(0)] as ${f}`).join(",\n  ")}
 from
   ${ctx.ref(params.segmentSchema, "identifies")}
 group by
