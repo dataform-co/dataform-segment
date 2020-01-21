@@ -25,7 +25,7 @@ Create a new JS file in your `definitions/` folder and create the segment tables
 const segment = require("dataform-segment");
 
 segment({
-  // The name of your segment scheme.
+  // The name of your segment schema.
   segmentSchema: "javascript",
   // The timeout for splitting sessions in milliseconds.
   sessionTimeoutMillis: 30 * 60 * 1000,
@@ -47,9 +47,9 @@ segment({
 
 For more advanced uses cases, see the [example.js](https://github.com/dataform-co/dataform-segment/blob/master/definitions/example.js).
 
-## Tables
+## Data models
 
-This package creates the following tables.
+This primary outputs of this package are the following data models (configurable as tables or views).
 
 ### `segment_sessions`
 
