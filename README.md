@@ -1,8 +1,10 @@
-Common data models for segment data such as sessions, and user roll up tables built from identifies.
+Common data models for segment data such as `sessions` and a user roll up table built from `identifies`.
 
 ## Supported warehouses
 
 - BigQuery
+
+*If you would like us to add support for another warehouse, please get in touch via [email](mailto:team@dataform.co) or [Slack](https://slack.dataform.co/)*
 
 ## Installation
 
@@ -48,6 +50,4 @@ Sessions contain a combined view of tracks and pages from segment. Each session 
 
 ### `segment_users`
 
-TODO: Dan
-
-
+Users aggregates all identifies calls to give a table with one row per user_id. Identify calls without only an anonymous_id are mapped to the user where possible.
