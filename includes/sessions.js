@@ -1,11 +1,11 @@
 module.exports = (params) => {
   return publish("segment_sessions", {
     bigquery: {
-      partitionBy: "DATE(session_start_timestamp)"
+      partitionBy: "date(session_start_timestamp)"
     },
     description: "Sessions contain a combined view of tracks and pages from segment. Each session is a period of sustained activity, with a new session starting after a 30min+ period of inactivity. Each session contains a repeated field of records which are either tracks or pages. Common fields are extracted out into the top level and type specific fields are kept within two structs: records.track and records.page",
     columns: {
-      session_id: "Unique identifies of the session",
+      session_id: "Unique identifier of the session",
       session_index: "A session counter for each user. session_index=1 is the first session for that users",
       session_start_timestamp: "Timestamp of the first event in the session",
       session_end_timestamp: "Timestamp of the last event in the session",
@@ -13,6 +13,7 @@ module.exports = (params) => {
     },
     ...params.defaultConfig
   }).query(ctx => `
+
 select
   session_id,
   session_index,
@@ -37,7 +38,7 @@ select
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")}
 group by
-  session_id,
-  session_index
+  session_id, session_index
+
 `)
 }

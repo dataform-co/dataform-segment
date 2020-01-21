@@ -2,86 +2,91 @@ module.exports = (params) => {
   return publish("segment_sessionized_events", {
     ...params.defaultConfig
   }).query(ctx => `
-WITH user_anon_mapping AS (
-  SELECT
-    anonymous_id,
-    ANY_VALUE(user_id) as user_id
-  FROM
-    ${ctx.ref(params.segmentSchema, "identifies")}
-  WHERE
-    anonymous_id IS NOT NULL
-  GROUP BY
-    1
+
+with user_anon_mapping as (
+-- for each anonymous_id, find a user_id mapped to it (if one exists)
+select
+  anonymous_id,
+  any_value(user_id) as user_id
+from
+  ${ctx.ref(params.segmentSchema, "identifies")}
+where
+  anonymous_id is not null
+group by
+  anonymous_id
 ),
-segment_events_combined AS (
-  SELECT * FROM ${params.segmentSchema, ctx.ref("segment_track_events")}
-  UNION ALL
-  SELECT * FROM ${params.segmentSchema, ctx.ref("segment_page_events")}
+
+segment_events_combined as (
+-- combine page and track tables into a full events table
+select * from ${params.segmentSchema, ctx.ref("segment_track_events")}
+union all
+select * from ${params.segmentSchema, ctx.ref("segment_page_events")}
 ),
-segment_events_mapped AS (
-  SELECT
-    timestamp,
-    COALESCE(
-      segment_events_combined.user_id,
-      user_anon_mapping.user_id,
-      segment_events_combined.anonymous_id
-    ) as user_id,
-    context_ip,
-    context_page_url,
-    context_page_path,
-    tracks_info,
-    pages_info
-  FROM
-    segment_events_combined
-    LEFT JOIN user_anon_mapping ON segment_events_combined.anonymous_id = user_anon_mapping.anonymous_id
+
+segment_events_mapped as (
+-- map anonymous_id to user_id (where possible)
+select
+  timestamp,
+  coalesce(
+    segment_events_combined.user_id,
+    user_anon_mapping.user_id,
+    segment_events_combined.anonymous_id
+  ) as user_id,
+  context_ip,
+  context_page_url,
+  context_page_path,
+  tracks_info,
+  pages_info
+from
+  segment_events_combined
+  left join user_anon_mapping on segment_events_combined.anonymous_id = user_anon_mapping.anonymous_id
 ),
-session_starts AS (
-  SELECT
-    *,
-    COALESCE(
-      (
-        UNIX_MILLIS(timestamp) - UNIX_MILLIS(
-          LAG(timestamp) OVER (
-            PARTITION BY user_id
-            ORDER BY
-              timestamp ASC
-          )
+
+session_starts as (
+-- label the event that starts the session
+select
+  *,
+  coalesce(
+    (
+      unix_millis(timestamp) - unix_millis(
+        lag(timestamp) over (
+          partition by user_id
+          order by
+            timestamp asc
         )
-      ) >= ${params.sessionTimeoutMillis},
-      TRUE
-    ) AS session_start_event
-  FROM
-    segment_events_mapped
-),
-with_session_index AS (
-  SELECT
-    *,
-    SUM(IF (session_start_event, 1, 0)) OVER (
-      PARTITION BY user_id
-      ORDER BY
-        timestamp ASC
-    ) AS session_index
-  FROM
-    session_starts
-),
-session_id AS (
-  SELECT
-    *,
-    farm_fingerprint(
-      CONCAT(
-        CAST(session_index AS STRING),
-        "|",
-        CAST(user_id AS STRING),
-        "|",
-        CAST(DATE(timestamp) AS STRING)
       )
-    ) AS session_id
-  FROM
-    with_session_index
+    ) >= ${params.sessionTimeoutMillis},
+    true
+  ) as session_start_event
+from
+  segment_events_mapped
+),
+
+with_session_index as (
+-- add a session_index (users first session = 1, users second session = 2 etc)
+select
+  *,
+  sum(if (session_start_event, 1, 0)) over (
+    partition by user_id
+    order by
+      timestamp asc
+  ) as session_index
+from
+  session_starts
 )
-SELECT
-  *
-FROM
-  session_id
+
+-- add a unique session_id to each session
+select
+  *,
+  farm_fingerprint(
+    concat(
+      cast(session_index as string),
+      "|",
+      cast(user_id as string)
+    )
+  ) as session_id
+from
+  with_session_index
+
 `)
 }
