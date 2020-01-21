@@ -62,3 +62,5 @@ Sessions contain a combined view of tracks and pages from segment. Each session 
 ### `segment_users`
 
 Users aggregates all identifies calls to give a table with one row per user_id. Identify calls without only an anonymous_id are mapped to the user where possible.
+
+![](https://dataform.sirv.com/dataform-segment-dag.png?profile=WebP)
