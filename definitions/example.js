@@ -19,5 +19,15 @@ const {
   customUserFields: ["email", "name", "company_name", "created_at"],
 });
 
-// Override the sessions table type to "table".
-sessions.type("table");
+// Override the sessions and user table type to "table".
+sessions.type("table").config({
+  bigQuery: {
+    partitionBy: "date(session_start_timestamp)"
+  }
+});
+
+users.type("table").config({
+  bigQuery: {
+    partitionBy: "date(first_seen_at)"
+  }
+});
