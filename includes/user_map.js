@@ -1,5 +1,5 @@
 module.exports = (params) => {
-  return publish("segment_user_anonymous_map", {
+  return publish("segment_user_map", {
     ...params.defaultConfig
   }).query(ctx => `
 

@@ -26,7 +26,7 @@ select
   pages_info
 from
   segment_events_combined
-  left join ${ctx.ref(params.defaultConfig.schema, "segment_user_anonymous_map")} as segment_user_anonymous_map
+  left join ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
     on segment_events_combined.anonymous_id = segment_user_anonymous_map.anonymous_id
 ),
 
