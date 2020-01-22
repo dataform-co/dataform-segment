@@ -13,8 +13,7 @@ Add the following to your `package.json` file in your Dataform project:
 {
     "dependencies": {
         "@dataform/core": "1.4.7",
-        "dataform-segment": "git+https://github.com/dataform-co/dataform-segment.git#4e1e51526177bcc5e655d63c8d8fec971492f206",
-        ...
+        "dataform-segment": "git+https://github.com/dataform-co/dataform-segment.git#4e1e51526177bcc5e655d63c8d8fec971492f206"
     }
 }
 ```
