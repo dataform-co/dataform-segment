@@ -1,3 +1,5 @@
+const segmentCommon = require("../common");
+
 module.exports = (params) => {
   return publish("segment_page_events", {
     ...params.defaultConfig
@@ -13,11 +15,11 @@ select
   context_page_path,
   struct(
     cast(null as string) as track_id, 
-    cast(null as string) as ${[...segment_common.TRACK_FIELDS, ...params.customTrackFields].join(",\n cast(null as string) as ")}
+    cast(null as string) as ${[...segmentCommon.TRACK_FIELDS, ...params.customTrackFields].join(",\n cast(null as string) as ")}
   ) as tracks_info,
   struct(
       id as page_id,
-      ${[...segment_common.PAGE_FIELDS, ...params.customPageFields].join(",\n")}
+      ${[...segmentCommon.PAGE_FIELDS, ...params.customPageFields].join(",\n")}
   ) as pages_info
 from
   ${ctx.ref(params.segmentSchema, "pages")}
