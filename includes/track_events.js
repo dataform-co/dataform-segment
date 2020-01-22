@@ -13,11 +13,11 @@ select
   context_page_path,
   struct(
     id as track_id,
-    ${[...common.TRACK_FIELDS, ...params.customTrackFields].join(",\n")}
+    ${[...segment_common.TRACK_FIELDS, ...params.customTrackFields].join(",\n")}
   ) as tracks_info,
   struct(
     cast(null as string) as page_id,
-    cast(null as string) as ${[...common.PAGE_FIELDS, ...params.customPageFields].join(",\n cast(null as string) as ")}
+    cast(null as string) as ${[...segment_common.PAGE_FIELDS, ...params.customPageFields].join(",\n cast(null as string) as ")}
   ) as pages_info
 from
   ${ctx.ref(params.segmentSchema, "tracks")}
