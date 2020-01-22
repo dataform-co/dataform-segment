@@ -1,4 +1,4 @@
-const segmentCommon = require("../common");
+const segmentCommon = require("./common");
 
 module.exports = (params) => {
   return publish("segment_track_events", {
