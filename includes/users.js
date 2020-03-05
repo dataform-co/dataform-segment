@@ -12,13 +12,13 @@ select
     coalesce(
     identifies.user_id,
     segment_user_anonymous_map.user_id,
-    identifies.anonymous_id
+    segment_user_anonymous_map.anonymous_id
   ) as user_id,
   min(timestamp) AS first_seen_at,
   ${params.customUserFields.map(f=>`array_agg(${f} ignore nulls order by timestamp desc)[safe_offset(0)] as ${f}`).join(",\n  ")}
 from
-  ${ctx.ref(params.segmentSchema, "identifies")} as identifies
-  left join ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
+  ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
+  left join ${ctx.ref(params.segmentSchema, "identifies")} as identifies
     on identifies.anonymous_id = segment_user_anonymous_map.anonymous_id
 group by
   user_id

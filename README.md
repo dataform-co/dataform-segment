@@ -8,17 +8,7 @@ Common data models for segment data such as `sessions` and a user roll up table 
 
 ## Installation
 
-Add the following to your `package.json` file in your Dataform project:
-```json
-{
-    "dependencies": {
-        "@dataform/core": "1.4.7",
-        "dataform-segment": "git+https://github.com/dataform-co/dataform-segment.git#4da1cf4f6b3d4f136e9367dbd8c746f83709735c"
-    }
-}
-```
-
-Previous releases can be installed from the [releases page](https://github.com/dataform-co/dataform-segment/releases).
+Add the package to your `package.json` file in your Dataform project. You can find the most up to package version on the [releases page](https://github.com/dataform-co/dataform-segment/releases).
 
 ## Configure the package
 
