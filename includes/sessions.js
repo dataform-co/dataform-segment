@@ -18,6 +18,13 @@ select
   max(timestamp) as session_end_timestamp,
   any_value(ip) as ip,
   any_value(user_id) as user_id,
+  any_value(first_utm_source) as first_utm_source,
+  any_value(first_utm_content) as first_utm_content,
+  any_value(first_utm_medium) as first_utm_medium,
+  any_value(first_utm_campaign) as first_utm_campaign,
+  any_value(first_utm_term) as first_utm_term,
+  any_value(first_utm_keyword) as first_utm_keyword,
+  any_value(first_page_visited) as first_page_visited,
   struct(
     count(tracks_info.track_id) as total_tracks,
     count(pages_info.page_id) as total_pages,
@@ -36,6 +43,5 @@ from
   ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")}
 group by
   session_id, session_index
-
 `)
 }

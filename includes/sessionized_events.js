@@ -61,9 +61,10 @@ select
   ) as session_index
 from
   session_starts
-)
+),
 
 -- add a unique session_id to each session
+with_session_id as (
 select
   *,
   farm_fingerprint(
@@ -75,6 +76,21 @@ select
   ) as session_id
 from
   with_session_index
+)
+
+-- add sessions first utm values
+select
+  *,
+  -- If we don't have a utm_source, use referrer instead as these are somewhat similar.
+  first_value(coalesce(pages_info.utm_source, pages_info.referrer) ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_source,
+  first_value(pages_info.utm_content ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_content,
+  first_value(pages_info.utm_medium ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_medium,
+  first_value(pages_info.utm_campaign ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_campaign,
+  first_value(pages_info.utm_term ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_term,
+  first_value(pages_info.utm_keyword ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_keyword,
+  first_value(pages_info.path ignore nulls) over (partition by session_id order by timestamp asc) as first_page_visited
+  from
+    with_session_id
 
 `)
 }
