@@ -19,9 +19,9 @@ select
     segment_user_anonymous_map.user_id,
     segment_events_combined.anonymous_id
   ) as user_id,
-  context_ip,
-  context_page_url,
-  context_page_path,
+  ip,
+  url,
+  path,
   tracks_info,
   pages_info
 from

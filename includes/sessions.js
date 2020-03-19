@@ -16,7 +16,7 @@ select
   session_index,
   min(timestamp) as session_start_timestamp,
   max(timestamp) as session_end_timestamp,
-  any_value(context_ip) as context_ip,
+  any_value(ip) as ip,
   any_value(user_id) as user_id,
   struct(
     count(tracks_info.track_id) as total_tracks,
@@ -26,8 +26,8 @@ select
   array_agg(
     struct(
       timestamp,
-      context_page_url,
-      context_page_path,
+      url,
+      path,
       tracks_info as track,
       pages_info as page
     )
