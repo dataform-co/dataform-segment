@@ -34,10 +34,9 @@ module.exports = (params) => {
     name: "pages"
   });
 
-  const tracks = declare({
-    ...defaultConfig,
-    schema: segmentSchema,
-    name: "tracks"
+  const tracks = ref({
+    schema: "dataform_data",
+    name: "tracks_enriched"
   });
 
   // Publish and return datasets.
