@@ -13,6 +13,8 @@ module.exports = (params) => {
     customPageFields: [], // list of custom fields to extract from the pages table
     customUserFields: [], // list of custom fields to extract from the identifies table
     customTrackFields: [], // list of custom fields to extract from the tracks table
+    customTracksTable: null, // Override the tracks table
+    customPagesTable: null, // Override the pages table
     ...params
   };
 
@@ -34,16 +36,16 @@ module.exports = (params) => {
     name: "pages"
   });
 
-  const tracks = ref({
-    schema: "dataform_data",
-    name: "tracks_enriched"
+  const tracks = declare({
+    schema: segmentSchema,
+    name: "tracks"
   });
 
   // Publish and return datasets.
   return {
     identifies,
     pages,
-    tracks,
+    // tracks,
     users: users(params),
     sessionizedEvents: sessionizedEvents(params),
     sessions: sessions(params),

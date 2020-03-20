@@ -29,6 +29,6 @@ select
         ([key, value]) => `cast(null as string) as ${value}`).join(",\n    ")}
   ) as pages_info
 from
-  ${ctx.ref(params.segmentSchema, "tracks")}
+  ${params.customTracksTable ? ctx.ref(params.segmentSchema, "tracks") : ctx.ref(params.segmentSchema, "tracks")}
 `)
 }

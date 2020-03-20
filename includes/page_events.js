@@ -31,7 +31,7 @@ select
         ([key, value]) => `${key} as ${value}`).join(",\n    ")}
   ) as pages_info
 from
-  ${ctx.ref(params.segmentSchema, "pages")}
+  ${params.customPagesTable ? ctx.ref(params.customPagesTable) : ctx.ref(params.segmentSchema, "pages")}
 
 `)
 }
