@@ -46,7 +46,7 @@ module.exports = (params) => {
   return {
     identifies,
     pages,
-    // tracks,
+    tracks,
     users: users(params),
     sessionizedEvents: sessionizedEvents(params),
     sessions: sessions(params),
