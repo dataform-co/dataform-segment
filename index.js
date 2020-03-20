@@ -13,6 +13,8 @@ module.exports = (params) => {
     customPageFields: [], // list of custom fields to extract from the pages table
     customUserFields: [], // list of custom fields to extract from the identifies table
     customTrackFields: [], // list of custom fields to extract from the tracks table
+    customTracksTable: null, // Override the tracks table
+    customPagesTable: null, // Override the pages table
     ...params
   };
 

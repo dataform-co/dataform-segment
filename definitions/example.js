@@ -10,6 +10,7 @@ const segmentModels = segment({
   },
   customPageFields: ["url_hash", "category"],
   customUserFields: ["email", "name", "company_name", "created_at"],
+  customPagesTable: { schema: "javascript", name: "pages" }
 });
 
 // Override the sessions and user table type to "table".
