@@ -37,6 +37,7 @@ module.exports = (params) => {
   });
 
   const tracks = declare({
+    ...defaultConfig,
     schema: segmentSchema,
     name: "tracks"
   });
