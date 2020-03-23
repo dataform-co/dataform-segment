@@ -22,12 +22,12 @@ select
   context_page_path as path,
   struct(
     cast(null as string) as track_id, 
-    ${Object.entries({...segmentCommon.TRACK_FIELDS, ...segmentCommon.customTrackFieldsObj}).map(
+    ${Object.entries({...segmentCommon.TRACK_FIELDS, ...customTrackFieldsObj}).map(
             ([key, value]) => `cast(null as string) as ${value}`).join(",\n    ")}
   ) as tracks_info,
   struct(
     id as page_id,
-    ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+    ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
         ([key, value]) => `${key} as ${value}`).join(",\n    ")}
   ) as pages_info
 from
