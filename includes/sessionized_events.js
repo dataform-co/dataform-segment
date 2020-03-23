@@ -82,7 +82,7 @@ from
 select
   *,
   -- If we don't have a utm_source, use referrer instead as these are somewhat similar.
-  first_value(coalesce(pages_info.utm_source, pages_info.referrer) ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_source,
+  first_value(coalesce(pages_info.utm_source, net.host(pages_info.referrer)) ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_source,
   first_value(pages_info.utm_content ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_content,
   first_value(pages_info.utm_medium ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_medium,
   first_value(pages_info.utm_campaign ignore nulls) over (partition by session_id order by timestamp asc) as first_utm_campaign,
