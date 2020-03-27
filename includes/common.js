@@ -22,5 +22,5 @@ let TRACK_FIELDS = {
 
 module.exports = {
   PAGE_FIELDS,
-  TRACK_FIELDS,
+  TRACK_FIELDS
 }

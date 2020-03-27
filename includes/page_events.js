@@ -14,22 +14,12 @@ module.exports = (params) => {
 
 -- format page calls into a format suitable to join with track calls
 select
-  timestamp,
+  "timestamp",
   user_id,
   anonymous_id,
-  context_ip as ip,
-  context_page_url as url,
-  context_page_path as path,
-  struct(
-    cast(null as string) as track_id, 
-    ${Object.entries({...segmentCommon.TRACK_FIELDS, ...segmentCommon.customTrackFieldsObj}).map(
-            ([key, value]) => `cast(null as string) as ${value}`).join(",\n    ")}
-  ) as tracks_info,
-  struct(
-    id as page_id,
-    ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
-        ([key, value]) => `${key} as ${value}`).join(",\n    ")}
-  ) as pages_info
+  id as page_id,
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+      ([key, value]) => `${key} as ${value}`).join(",\n    ")}
 from
   ${ctx.ref(params.segmentSchema, "pages")}
 

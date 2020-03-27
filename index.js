@@ -2,7 +2,9 @@ const users = require("./includes/users");
 const sessionizedEvents = require("./includes/sessionized_events");
 const sessions = require("./includes/sessions");
 const pageEvents = require("./includes/page_events");
+const sessionizedPages = require("./includes/sessionized_pages");
 const trackEvents = require("./includes/track_events");
+const sessionizedTracks = require("./includes/sessionized_tracks");
 const userMap = require("./includes/user_map");
 
 module.exports = (params) => {
@@ -49,7 +51,9 @@ module.exports = (params) => {
     sessionizedEvents: sessionizedEvents(params),
     sessions: sessions(params),
     pageEvents: pageEvents(params),
+    sessionizedPages: sessionizedPages(params),
     trackEvents: trackEvents(params),
+    sessionizedTracks: sessionizedTracks(params),
     userMap: userMap(params),
   }
 }
