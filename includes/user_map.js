@@ -5,42 +5,43 @@ module.exports = (params) => {
 
 -- for each anonymous_id, find a user_id mapped to it (if one exists)
 with anonymous_id_user_id_pairs as (
-select
+select distinct
   anonymous_id,
-  user_id
+  user_id,
+  timestamp
 from
   (
   select
     anonymous_id,
-    user_id
+    user_id,
+    timestamp
   from
     ${ctx.ref(params.segmentSchema, "tracks")}
   union all
   select
     anonymous_id,
-    user_id
+    user_id,
+    timestamp
   from
     ${ctx.ref(params.segmentSchema, "pages")}
   union all
   select
     anonymous_id,
-    user_id
+    user_id,
+    timestamp
   from
     ${ctx.ref(params.segmentSchema, "identifies")}
-  )
-group by
-  1,2
+  ) as combined
 )
 
-select
+select distinct
   anonymous_id,
-  any_value(user_id) as user_id
+  last_value(user_id) over (partition by anonymous_id order by timestamp asc rows between unbounded preceding and unbounded following) as user_id
 from
   anonymous_id_user_id_pairs
 where
   anonymous_id is not null
-group by
-  anonymous_id
+  and user_id is not null
 
 `)
 }
