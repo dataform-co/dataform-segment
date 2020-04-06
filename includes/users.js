@@ -16,8 +16,8 @@ module.exports = (params) => {
 
 select distinct
   ${USER} as user_id,
-  first_value(timestamp ignore nulls) over (partition by ${USER} order by timestamp asc rows between unbounded preceding and unbounded following) as timestamp,
-  ${params.customUserFields.map(f=>`first_value(${f} ignore nulls) over (partition by ${USER} order by timestamp desc rows between unbounded preceding and unbounded following) as ${f}`).join(",\n  ")}
+  ${crossdb.windowFunction("first_value", '"timestamp"', true, USER, '"timestamp" asc')} as timestamp,
+  ${params.customUserFields.map(f=> `${crossdb.windowFunction("first_value", f, true, USER, '"timestamp" desc')} as ${f}`).join(",\n  ")}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
   left join ${ctx.ref(params.segmentSchema, "identifies")} as identifies

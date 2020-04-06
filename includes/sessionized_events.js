@@ -48,7 +48,7 @@ select
   coalesce(
     (
       ${crossdb.timestampDiff(`millisecond`, `"timestamp"`,
-      `lag(timestamp) over (partition by user_id order by timestamp asc)`
+      crossdb.windowFunction("lag", "timestamp", false, "user_id", "timestamp asc", " ") // supplying empty frame clause as frame clause is not valid for a lag
       )}
     ) >= ${params.sessionTimeoutMillis},
     true
@@ -61,12 +61,7 @@ with_session_index as (
 -- add a session_index (users first session = 1, users second session = 2 etc)
 select
   *,
-  sum(case when session_start_event then 1 else 0 end) over (
-    partition by user_id
-    order by
-      timestamp asc
-      rows between unbounded preceding and current row
-  ) as session_index
+  ${crossdb.windowFunction("sum", "case when session_start_event then 1 else 0 end", false, "user_id", '"timestamp" asc', "rows between unbounded preceding and current row")} as session_index
 from
   session_starts
 )

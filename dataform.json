@@ -1,6 +1,6 @@
 {
     "defaultSchema": "dataform",
     "assertionSchema": "dataform_assertions",
-    "warehouse": "bigquery",
+    "warehouse": "redshift",
     "gcloudProjectId": "tada-analytics"
 }
