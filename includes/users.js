@@ -1,3 +1,5 @@
+const crossdb = require("./crossdb");
+
 let USER = `coalesce(
   identifies.user_id,
   segment_user_anonymous_map.user_id,

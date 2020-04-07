@@ -1,4 +1,5 @@
 const segmentCommon = require("./common");
+const crossdb = require("./crossdb");
 
 module.exports = (params) => {
   return publish("segment_sessions", {

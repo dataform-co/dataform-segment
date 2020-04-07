@@ -1,3 +1,5 @@
+const crossdb = require("./crossdb");
+
 module.exports = (params) => {
   return publish("segment_sessionized_events", {
     ...params.defaultConfig
