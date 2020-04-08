@@ -12,8 +12,7 @@ let PAGE_FIELDS = {
     context_campaign_medium: "utm_medium",
     context_campaign_source: "utm_source",
     context_campaign_name: "utm_campaign",
-    context_campaign_term: "utm_term",
-    context_campaign_keyword: "utm_keyword"};
+    context_campaign_term: "utm_term"};
 
 // From here: https://segment.com/docs/connections/spec/track/
 let TRACK_FIELDS = {

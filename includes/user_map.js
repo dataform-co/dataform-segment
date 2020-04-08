@@ -1,3 +1,5 @@
+const crossdb = require("./crossdb");
+
 module.exports = (params) => {
   return publish("segment_user_map", {
     ...params.defaultConfig
@@ -36,7 +38,13 @@ from
 
 select distinct
   anonymous_id,
-  last_value(user_id) over (partition by anonymous_id order by timestamp asc rows between unbounded preceding and unbounded following) as user_id
+  ${crossdb.windowFunction({
+        func: "last_value",
+        value: "user_id",
+        ignore_nulls: false,
+        partition_fields: "anonymous_id",
+        order_fields: '"timestamp" asc',
+      })} as user_id
 from
   anonymous_id_user_id_pairs
 where
