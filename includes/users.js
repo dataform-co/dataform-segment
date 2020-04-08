@@ -18,7 +18,8 @@ module.exports = (params) => {
 
 select distinct
   ${USER} as user_id,
-  ${crossdb.windowFunction("first_value", '"timestamp"', true, USER, '"timestamp" asc')} as timestamp,
+  ${crossdb.windowFunction("first_value", '"timestamp"', true, USER, '"timestamp" asc')} as timestamp
+  ${params.customUserFields.length ? `,` : ``}
   ${params.customUserFields.map(f=> `${crossdb.windowFunction("first_value", f, true, USER, '"timestamp" desc')} as ${f}`).join(",\n  ")}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
