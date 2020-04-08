@@ -18,7 +18,7 @@ function timestampDiff(date_part, start_timestamp, end_timestamp, warehouse) {
       minute: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('hour', ${end_timestamp} - ${start_timestamp}) + date_part('minute', ${end_timestamp} - ${start_timestamp})`,
       second: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('hour', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('minute', ${end_timestamp} - ${start_timestamp}) + date_part('second', ${end_timestamp} - ${start_timestamp})`,
       millisecond: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('hour', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('minute', ${end_timestamp} - ${start_timestamp}) + 1000 * date_part('second', ${end_timestamp} - ${start_timestamp}) + date_part('millisecond', ${end_timestamp} - ${start_timestamp})`
-    }[date_part.toLowerCase()],
+    } [date_part.toLowerCase()],
     snowflake: `datediff(${date_part}, ${start_timestamp}, ${end_timestamp})`,
     sqldatawarehouse: `datediff(${date_part}, ${start_timestamp}, ${end_timestamp})`
   })[warehouse || session.config.warehouse];
@@ -34,7 +34,15 @@ function generateSurrogateKey(id_array, warehouse) {
   })[warehouse || session.config.warehouse];
 }
 
-function windowFunction(func, value, ignore_nulls, partition_fields, order_fields, frame_clause, warehouse) {
+function windowFunction({
+  func,
+  value,
+  ignore_nulls,
+  partition_fields,
+  order_fields,
+  frame_clause,
+  warehouse
+}) {
   return ({
     bigquery: `${func}(${value} ${ignore_nulls ? `ignore nulls` : ``}) over (partition by ${partition_fields} order by ${order_fields} ${frame_clause ? frame_clause : ``})`,
     redshift: `${func}(${value} ${ignore_nulls ? `ignore nulls` : ``}) over (partition by ${partition_fields} order by ${order_fields} ${frame_clause ? frame_clause : `rows between unbounded preceding and unbounded following`})`,

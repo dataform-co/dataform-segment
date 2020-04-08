@@ -17,9 +17,21 @@ with first_and_last_page_values as (
 select distinct
   session_id,
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
-      ([key, value]) => `${crossdb.windowFunction("first_value", value, true, "session_id", '"timestamp" asc')} as first_${value}`).join(",\n  ")},
+      ([key, value]) => `${crossdb.windowFunction({
+        func: "first_value",
+        value: value,
+        ignore_nulls: true,
+        partition_fields: "session_id",
+        order_fields: '"timestamp" asc',
+      })} as first_${value}`).join(",\n  ")},
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
-      ([key, value]) => `${crossdb.windowFunction("last_value", value, true, "session_id", '"timestamp" asc')} as last_${value}`).join(",\n  ")}
+      ([key, value]) => `${crossdb.windowFunction({
+        func: "last_value",
+        value: value,
+        ignore_nulls: true,
+        partition_fields: "session_id",
+        order_fields: '"timestamp" asc',
+      })} as last_${value}`).join(",\n  ")}
   from
     ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")}
   )
