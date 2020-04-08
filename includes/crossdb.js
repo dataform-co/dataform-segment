@@ -12,7 +12,13 @@ function timestampDiff(date_part, start_timestamp, end_timestamp, warehouse) {
   return ({
     bigquery: `timestamp_diff(${end_timestamp}, ${start_timestamp}, ${date_part})`,
     redshift: `datediff(${date_part}, ${start_timestamp}, ${end_timestamp})`,
-    postgres: `datediff(${date_part}, ${start_timestamp}, ${end_timestamp})`,
+    postgres: {
+      day: `date_part('day', ${end_timestamp} - ${start_timestamp})`,
+      hour: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + date_part('hour', ${end_timestamp} - ${start_timestamp})`,
+      minute: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('hour', ${end_timestamp} - ${start_timestamp}) + date_part('minute', ${end_timestamp} - ${start_timestamp})`,
+      second: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('hour', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('minute', ${end_timestamp} - ${start_timestamp}) + date_part('second', ${end_timestamp} - ${start_timestamp})`,
+      millisecond: `24 * date_part('day', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('hour', ${end_timestamp} - ${start_timestamp}) + 60 * date_part('minute', ${end_timestamp} - ${start_timestamp}) + 1000 * date_part('second', ${end_timestamp} - ${start_timestamp}) + date_part('millisecond', ${end_timestamp} - ${start_timestamp})`
+    }[date_part.toLowerCase()],
     snowflake: `datediff(${date_part}, ${start_timestamp}, ${end_timestamp})`,
     sqldatawarehouse: `datediff(${date_part}, ${start_timestamp}, ${end_timestamp})`
   })[warehouse || session.config.warehouse];
