@@ -7,7 +7,7 @@ module.exports = (params) => {
 
 -- annotate track records with session details
 select
-  segment_sessionized_events."timestamp",
+  segment_sessionized_events.timestamp,
   segment_sessionized_events.user_id,
   segment_sessionized_events.track_id,
   segment_sessionized_events.session_index,
