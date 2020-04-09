@@ -65,20 +65,20 @@ select
   ${ctx.when(global.session.config.warehouse == "bigquery", `-- repeated array of records
   ,array_agg(
     struct(
-      segment_sessionized_events."timestamp",
+      segment_sessionized_events.timestamp,
       struct(
-        segment_sessionized_tracks."timestamp",
+        segment_sessionized_tracks.timestamp,
         segment_sessionized_tracks.track_id,
         ${Object.entries({...segmentCommon.TRACK_FIELDS, ...segmentCommon.customTrackFieldsObj}).map(
       ([key, value]) => `segment_sessionized_tracks.${value}`).join(",\n  ")}
       ) as track,
       struct(
-        segment_sessionized_pages."timestamp",
+        segment_sessionized_pages.timestamp,
         segment_sessionized_pages.page_id,
         ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
       ([key, value]) => `segment_sessionized_pages.${value}`).join(",\n  ")}
       ) as page
-    ) order by segment_sessionized_events."timestamp" asc
+    ) order by segment_sessionized_events.timestamp asc
   ) as records`)}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")}
