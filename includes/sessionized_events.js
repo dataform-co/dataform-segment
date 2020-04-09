@@ -8,28 +8,28 @@ module.exports = (params) => {
 with segment_events_combined as (
 -- combine page and track tables into a full events table
 select
-  "timestamp",
+  track_events.timestamp,
   user_id,
   anonymous_id,
   track_id,
   null as page_id
 from 
-  ${params.segmentSchema, ctx.ref("segment_track_events")}
+  ${params.segmentSchema, ctx.ref("segment_track_events")} as track_events
 union all
 select
-  "timestamp",
+  page_events.timestamp,
   user_id,
   anonymous_id,
   null as track_id,
   page_id
 from 
-  ${params.segmentSchema, ctx.ref("segment_page_events")}
+  ${params.segmentSchema, ctx.ref("segment_page_events")} as page_events
 ),
 
 segment_events_mapped as (
 -- map anonymous_id to user_id (where possible)
 select
-  "timestamp",
+  segment_events_combined.timestamp,
   coalesce(
     segment_events_combined.user_id,
     segment_user_anonymous_map.user_id,
@@ -49,7 +49,7 @@ select
   *,
   coalesce(
     (
-      ${crossdb.timestampDiff(`millisecond`, `"timestamp"`,
+      ${crossdb.timestampDiff(`millisecond`, `segment_events_mapped.timestamp`,
       crossdb.windowFunction({
         func: "lag",
         value: "timestamp",
@@ -75,7 +75,7 @@ select
         value: "case when session_start_event then 1 else 0 end",
         ignore_nulls: false,
         partition_fields: "user_id",
-        order_fields: '"timestamp" asc',
+        order_fields: 'session_starts.timestamp asc',
         frame_clause: "rows between unbounded preceding and current row"
       })} as session_index
 from

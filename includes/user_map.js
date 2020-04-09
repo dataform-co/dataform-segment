@@ -43,7 +43,7 @@ select distinct
         value: "user_id",
         ignore_nulls: false,
         partition_fields: "anonymous_id",
-        order_fields: '"timestamp" asc',
+        order_fields: "anonymous_id_user_id_pairs.timestamp asc",
       })} as user_id
 from
   anonymous_id_user_id_pairs

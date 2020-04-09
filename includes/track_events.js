@@ -12,13 +12,13 @@ module.exports = (params) => {
 
 -- format track calls into a format suitable to join with page calls
 select
-  "timestamp",
+  tracks.timestamp,
   user_id,
   anonymous_id,
   id as track_id,
   ${Object.entries({...segmentCommon.TRACK_FIELDS, ...segmentCommon.customTrackFieldsObj}).map(
       ([key, value]) => `${key} as ${value}`).join(",\n    ")}
 from
-  ${ctx.ref(params.segmentSchema, "tracks")}
+  ${ctx.ref(params.segmentSchema, "tracks")} as tracks
 `)
 }
