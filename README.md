@@ -3,8 +3,8 @@ Common data models for segment data such as `sessions` and a user roll up table 
 ## Supported warehouses
 
 - BigQuery
-- Redshift (Alpha)
-- Postgres (Alpha)
+- Redshift (Beta)
+- Postgres (Beta)
 
 *If you would like us to add support for another warehouse, please get in touch via [email](mailto:team@dataform.co) or [Slack](https://slack.dataform.co/)*
 
