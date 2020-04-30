@@ -14,13 +14,13 @@ const segmentModels = segment({
 
 // Override the sessions and user table type to "table".
 segmentModels.sessions.type("table").config({
-  bigQuery: {
+  bigquery: {
     partitionBy: "date(session_start_timestamp)"
   }
 });
 
 segmentModels.users.type("table").config({
-  bigQuery: {
+  bigquery: {
     partitionBy: "date(first_seen_at)"
   }
 });
