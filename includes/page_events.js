@@ -14,14 +14,14 @@ module.exports = (params) => {
 
 -- format page calls into a format suitable to join with track calls
 select
-  "timestamp",
+  pages.timestamp,
   user_id,
   anonymous_id,
   id as page_id,
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
       ([key, value]) => `${key} as ${value}`).join(",\n    ")}
 from
-  ${ctx.ref(params.segmentSchema, "pages")}
+  ${ctx.ref(params.segmentSchema, "pages")} as pages
 
 `)
 }

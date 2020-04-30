@@ -20,10 +20,10 @@ select distinct
   ${USER} as user_id,
   ${crossdb.windowFunction({
         func: "first_value",
-        value: '"timestamp"',
+        value: "identifies.timestamp",
         ignore_nulls: true,
         partition_fields: USER,
-        order_fields: '"timestamp" asc',
+        order_fields: "identifies.timestamp asc",
       })} as timestamp
   ${params.customUserFields.length ? `,` : ``}
   ${params.customUserFields.map(f=> `${crossdb.windowFunction({
@@ -31,7 +31,7 @@ select distinct
         value: f,
         ignore_nulls: true,
         partition_fields: USER,
-        order_fields: '"timestamp" desc',
+        order_fields: "identifies.timestamp desc",
       })} as ${f}`).join(",\n  ")}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map

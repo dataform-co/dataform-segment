@@ -22,7 +22,7 @@ select distinct
         value: value,
         ignore_nulls: true,
         partition_fields: "session_id",
-        order_fields: '"timestamp" asc',
+        order_fields: 'sessionized_pages.timestamp asc',
       })} as first_${value}`).join(",\n  ")},
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
       ([key, value]) => `${crossdb.windowFunction({
@@ -30,10 +30,10 @@ select distinct
         value: value,
         ignore_nulls: true,
         partition_fields: "session_id",
-        order_fields: '"timestamp" asc',
+        order_fields: 'sessionized_pages.timestamp asc',
       })} as last_${value}`).join(",\n  ")}
   from
-    ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")}
+    ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")} as sessionized_pages
   )
 
 select
