@@ -2,6 +2,11 @@ const segmentCommon = require("./common");
 const crossdb = require("./crossdb");
 
 module.exports = (params) => {
+
+  const customPageFieldsObj = params.customPageFields.reduce((acc, item) => ({...acc, [item]: item }), {});
+
+  const customTrackFieldsObj = params.customTrackFields.reduce((acc, item) => ({...acc, [item]: item }), {});
+
   return publish("segment_sessions", {
     description: "Sessions contain a combined view of tracks and pages from segment. Each session is a period of sustained activity, with a new session starting after a 30min+ period of inactivity. Each session contains a repeated field of records which are either tracks or pages. Common fields are extracted out into the top level and type specific fields are kept within two structs: records.track and records.page",
     columns: {
@@ -16,7 +21,7 @@ module.exports = (params) => {
 with first_and_last_page_values as (
 select distinct
   session_id,
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `${crossdb.windowFunction({
         func: "first_value",
         value: value,
@@ -24,7 +29,7 @@ select distinct
         partition_fields: "session_id",
         order_fields: 'sessionized_pages.timestamp asc',
       })} as first_${value}`).join(",\n  ")},
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `${crossdb.windowFunction({
         func: "last_value",
         value: value,
@@ -52,13 +57,13 @@ select
 
   -- first values in the session for page fields
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `first_and_last_page_values.first_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_page_values`)},
 
   -- last values in the session for page fields
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `first_and_last_page_values.last_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as last_page_values`)}
   
@@ -69,13 +74,13 @@ select
       struct(
         segment_sessionized_tracks.timestamp,
         segment_sessionized_tracks.track_id,
-        ${Object.entries({...segmentCommon.TRACK_FIELDS, ...segmentCommon.customTrackFieldsObj}).map(
+        ${Object.entries({...segmentCommon.TRACK_FIELDS, ...customTrackFieldsObj}).map(
       ([key, value]) => `segment_sessionized_tracks.${value}`).join(",\n  ")}
       ) as track,
       struct(
         segment_sessionized_pages.timestamp,
         segment_sessionized_pages.page_id,
-        ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+        ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `segment_sessionized_pages.${value}`).join(",\n  ")}
       ) as page
     ) order by segment_sessionized_events.timestamp asc
@@ -90,9 +95,9 @@ from
   left join ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_tracks")} as segment_sessionized_tracks
     using(track_id)`)}
 group by
-  session_id, session_index, user_id ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  session_id, session_index, user_id ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `, first_${value}`).join(" ")}
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `, last_${value}`).join(" ")}
 `)
 }

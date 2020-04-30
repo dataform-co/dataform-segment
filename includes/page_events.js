@@ -2,8 +2,6 @@ const segmentCommon = require("./common");
 
 module.exports = (params) => {
 
-  
-
   const customPageFieldsObj = params.customPageFields.reduce((acc, item) => ({...acc, [item]: item }), {});
 
   const customTrackFieldsObj = params.customTrackFields.reduce((acc, item) => ({...acc, [item]: item }), {});
@@ -18,7 +16,7 @@ select
   user_id,
   anonymous_id,
   id as page_id,
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...segmentCommon.customPageFieldsObj}).map(
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `${key} as ${value}`).join(",\n    ")}
 from
   ${ctx.ref(params.segmentSchema, "pages")} as pages
