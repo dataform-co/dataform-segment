@@ -24,7 +24,7 @@ select distinct
         ignore_nulls: true,
         partition_fields: USER,
         order_fields: "identifies.timestamp asc",
-      })} as timestamp
+      })} as first_seen_at
   ${params.customUserFields.length ? `,` : ``}
   ${params.customUserFields.map(f=> `${crossdb.windowFunction({
         func: "first_value",
