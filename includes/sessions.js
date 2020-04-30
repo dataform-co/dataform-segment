@@ -37,9 +37,9 @@ select distinct
   )
 
 select
-  session_id,
-  session_index,
-  user_id,
+  segment_sessionized_events.session_id,
+  segment_sessionized_events.session_index,
+  segment_sessionized_events.user_id,
   min(segment_sessionized_events.timestamp) as session_start_timestamp,
   max(segment_sessionized_events.timestamp) as session_end_timestamp,
   
