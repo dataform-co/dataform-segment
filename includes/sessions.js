@@ -81,7 +81,7 @@ select
     ) order by segment_sessionized_events.timestamp asc
   ) as records`)}
 from
-  ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")}
+  ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")} as segment_sessionized_events
   left join first_and_last_page_values
     using(session_id)
   ${ctx.when(global.session.config.warehouse == "bigquery", `
