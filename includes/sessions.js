@@ -47,7 +47,7 @@ select
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   count(segment_sessionized_events.track_id) as total_tracks,
   count(segment_sessionized_events.page_id) as total_pages,
-  ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")}
+  ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as stats`)},
 
   -- first values in the session for page fields
