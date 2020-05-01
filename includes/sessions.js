@@ -18,6 +18,7 @@ module.exports = (params) => {
     ...params.defaultConfig
   }).query(ctx => `
 
+/* TODO: optimise this code to make it work, or enable only for incremental builds
 with first_and_last_page_values as (
 select distinct
   session_id,
@@ -40,6 +41,7 @@ select distinct
   from
     ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")} as sessionized_pages
   )
+*/
 
 select
   segment_sessionized_events.session_id,
@@ -54,21 +56,20 @@ select
   count(segment_sessionized_events.page_id) as total_pages,
   ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as stats`)},
-
+/* See TODO at start of script
   -- first values in the session for page fields
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `first_and_last_page_values.first_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_page_values`)},
-
   -- last values in the session for page fields
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `first_and_last_page_values.last_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as last_page_values`)}
-  
+*/
   ${ctx.when(global.session.config.warehouse == "bigquery", `-- repeated array of records
-  ,array_agg(
+  /*,*/array_agg(
     struct(
       segment_sessionized_events.timestamp,
       struct(
@@ -87,17 +88,22 @@ select
   ) as records`)}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")} as segment_sessionized_events
+/* See TODO at start of script
   left join first_and_last_page_values
     using(session_id)
+*/
   ${ctx.when(global.session.config.warehouse == "bigquery", `
   left join ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")} as segment_sessionized_pages
     using(page_id)
   left join ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_tracks")} as segment_sessionized_tracks
     using(track_id)`)}
 group by
-  session_id, session_index, user_id ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
+  session_id, session_index, user_id 
+/* See TODO at start of script
+  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `, first_${value}`).join(" ")}
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `, last_${value}`).join(" ")}
+*/
 `)
 }
