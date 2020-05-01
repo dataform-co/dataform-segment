@@ -50,7 +50,7 @@ select
   *,
   coalesce(
     (
-      ${crossdb.timestampDiff(`millisecond`, `segment_events_mapped.timestamp`,
+      ${crossdb.timestampDiff(`millisecond`,
       crossdb.windowFunction({
         func: "lag",
         value: "timestamp",
@@ -58,7 +58,8 @@ select
         partition_fields: "user_id",
         order_fields: "timestamp asc",
         frame_clause: " " // supplying empty frame clause as frame clause is not valid for a lag
-      })
+      }),
+      `segment_events_mapped.timestamp`
       )}
     ) >= ${params.sessionTimeoutMillis},
     true
