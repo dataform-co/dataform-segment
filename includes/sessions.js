@@ -8,6 +8,9 @@ module.exports = (params) => {
   const customTrackFieldsObj = params.customTrackFields.reduce((acc, item) => ({...acc, [item]: item }), {});
 
   return publish("segment_sessions", {
+    assertions: {
+      uniqueKey: ["session_id"]
+    },
     description: "Sessions contain a combined view of tracks and pages from segment. Each session is a period of sustained activity, with a new session starting after a 30min+ period of inactivity. Each session contains a repeated field of records which are either tracks or pages. Common fields are extracted out into the top level and type specific fields are kept within two structs: records.track and records.page",
     columns: {
       session_id: "Unique identifier of the session",
@@ -18,7 +21,7 @@ module.exports = (params) => {
     ...params.defaultConfig
   }).query(ctx => `
 
-/* TODO: optimise this code to make it work, or enable only for incremental builds
+/* TODO: optimise this code to make it work, or enable only for incremental builds */
 with first_and_last_page_values as (
 select distinct
   session_id,
@@ -29,6 +32,7 @@ select distinct
         ignore_nulls: true,
         partition_fields: "session_id",
         order_fields: 'sessionized_pages.timestamp asc',
+        frame_clause: "rows between unbounded preceding and unbounded following",
       })} as first_${value}`).join(",\n  ")},
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `${crossdb.windowFunction({
@@ -37,10 +41,12 @@ select distinct
         ignore_nulls: true,
         partition_fields: "session_id",
         order_fields: 'sessionized_pages.timestamp asc',
+        frame_clause: "rows between unbounded preceding and unbounded following",
       })} as last_${value}`).join(",\n  ")}
   from
     ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")} as sessionized_pages
   )
+/*
 */
 
 select
@@ -56,12 +62,13 @@ select
   count(segment_sessionized_events.page_id) as total_pages,
   ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as stats`)},
-/* See TODO at start of script
+/* See TODO at start of script */
   -- first values in the session for page fields
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `first_and_last_page_values.first_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_page_values`)},
+  /*
   -- last values in the session for page fields
   ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
@@ -88,10 +95,10 @@ select
   ) as records`)}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_events")} as segment_sessionized_events
-/* See TODO at start of script
+/* See TODO at start of script */
   left join first_and_last_page_values
     using(session_id)
-*/
+/**/
   ${ctx.when(global.session.config.warehouse == "bigquery", `
   left join ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")} as segment_sessionized_pages
     using(page_id)
@@ -99,10 +106,10 @@ from
     using(track_id)`)}
 group by
   session_id, session_index, user_id 
-/* See TODO at start of script
+/* See TODO at start of script */
   ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `, first_${value}`).join(" ")}
-  ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
+ /* ${Object.entries({...segmentCommon.PAGE_FIELDS, ...customPageFieldsObj}).map(
       ([key, value]) => `, last_${value}`).join(" ")}
 */
 `)

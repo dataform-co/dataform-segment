@@ -8,6 +8,9 @@ let USER = `coalesce(
 
 module.exports = (params) => {
   return publish("segment_users", {
+    assertions: {
+      uniqueKey: ["user_id"]
+    },
     description: "Users aggregates all identifies calls to give a table with one row per user_id. Identify calls without only an anonymous_id are mapped to the user where possible.",
     columns: {
       user_id: "Unique identifier of the user",
@@ -24,14 +27,16 @@ select distinct
         ignore_nulls: true,
         partition_fields: USER,
         order_fields: "identifies.timestamp asc",
+        frame_clause: "rows between unbounded preceding and unbounded following",
       })} as first_seen_at
   ${params.customUserFields.length ? `,` : ``}
-  ${params.customUserFields.map(f=> `${crossdb.windowFunction({
+  ${params.customUserFields.map(f => `${crossdb.windowFunction({
         func: "first_value",
         value: f,
         ignore_nulls: true,
         partition_fields: USER,
         order_fields: "identifies.timestamp desc",
+        frame_clause: "rows between unbounded preceding and unbounded following",
       })} as ${f}`).join(",\n  ")}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map

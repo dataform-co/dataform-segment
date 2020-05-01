@@ -11,7 +11,7 @@ module.exports = (params) => {
   }).query(ctx => `
 
 -- format page calls into a format suitable to join with track calls
-select
+select distinct
   pages.timestamp,
   user_id,
   anonymous_id,
