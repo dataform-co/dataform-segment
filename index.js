@@ -15,32 +15,37 @@ module.exports = (params) => {
     customPageFields: [], // list of custom fields to extract from the pages table
     customUserFields: [], // list of custom fields to extract from the identifies table
     customTrackFields: [], // list of custom fields to extract from the tracks table
+    declareSources: true,
     ...params
   };
 
   const {
     defaultConfig,
-    segmentSchema
+    segmentSchema,
+    declareSources
   } = params;
+
+  let identifies, pages, tracks;
   
-  // Declare the source segment tables.
-  const identifies = declare({
-    ...defaultConfig,
-    schema: segmentSchema,
-    name: "identifies"
-  });
+  if (declareSources) {
+    identifies = declare({
+      ...defaultConfig,
+      schema: segmentSchema,
+      name: "identifies"
+    });
 
-  const pages = declare({
-    ...defaultConfig,
-    schema: segmentSchema,
-    name: "pages"
-  });
+    pages = declare({
+      ...defaultConfig,
+      schema: segmentSchema,
+      name: "pages"
+    });
 
-  const tracks = declare({
-    ...defaultConfig,
-    schema: segmentSchema,
-    name: "tracks"
-  });
+    tracks = declare({
+      ...defaultConfig,
+      schema: segmentSchema,
+      name: "tracks"
+    });
+  }
 
   // Publish and return datasets.
   return {
