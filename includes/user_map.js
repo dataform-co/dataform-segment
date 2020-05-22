@@ -49,7 +49,7 @@ from
   anonymous_id_user_id_pairs
 where
   anonymous_id is not null
-  and user_id is not null
+  or user_id is not null
 
 `)
 }
