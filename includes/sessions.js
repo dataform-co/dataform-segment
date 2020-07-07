@@ -28,7 +28,7 @@ select distinct
       ([key, value]) => `${crossdb.windowFunction({
         func: "first_value",
         value: value,
-        ignore_nulls: true,
+        ignore_nulls: false,
         partition_fields: "session_id",
         order_fields: 'sessionized_pages.timestamp asc',
         frame_clause: "rows between unbounded preceding and unbounded following",
@@ -37,7 +37,7 @@ select distinct
       ([key, value]) => `${crossdb.windowFunction({
         func: "last_value",
         value: value,
-        ignore_nulls: true,
+        ignore_nulls: false,
         partition_fields: "session_id",
         order_fields: 'sessionized_pages.timestamp asc',
         frame_clause: "rows between unbounded preceding and unbounded following",
