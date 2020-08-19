@@ -2,5 +2,5 @@
     "defaultSchema": "segment_dataform_package",
     "assertionSchema": "segment_dataform_package",
     "warehouse": "bigquery",
-    "gcloudProjectId": "tada-analytics"
+    "gcloudProjectId": "dataform-corp"
 }

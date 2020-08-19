@@ -44,6 +44,7 @@ select distinct
         ignore_nulls: false,
         partition_fields: "anonymous_id",
         order_fields: "anonymous_id_user_id_pairs.timestamp asc",
+        frame_clause: "rows between unbounded preceding and current row"
       })} as user_id
 from
   anonymous_id_user_id_pairs
