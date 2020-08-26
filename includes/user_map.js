@@ -32,6 +32,13 @@ from
     user_id,
     timestamp
   from
+    ${ctx.ref(params.segmentSchema, "screens")}
+  union all
+  select
+    anonymous_id,
+    user_id,
+    timestamp
+  from
     ${ctx.ref(params.segmentSchema, "identifies")}
   ) as combined
 )
