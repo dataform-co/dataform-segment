@@ -1,7 +1,7 @@
 const segment = require("../");
 
 const segmentModels = segment({
-  declareSources: true,
+  declareSources: false,
   sessionTimeoutMillis: 30 * 60 * 1000,
   defaultConfig: {
     schema: "segment_package_example",
@@ -13,29 +13,29 @@ const segmentModels = segment({
   includeScreens: false
 });
 
-// declare({
-//   database: "tada-analytics",
-//   schema: "javascript",
-//   name: "pages"
-// });
+declare({
+  database: "tada-analytics",
+  schema: "javascript",
+  name: "pages"
+});
 
-// declare({
-//   database: "tada-analytics",
-//   schema: "javascript",
-//   name: "screens"
-// });
+declare({
+  database: "tada-analytics",
+  schema: "javascript",
+  name: "screens"
+});
 
-// declare({
-//   database: "tada-analytics",
-//   schema: "javascript",
-//   name: "tracks"
-// });
+declare({
+  database: "tada-analytics",
+  schema: "javascript",
+  name: "tracks"
+});
 
-// declare({
-//   database: "tada-analytics",
-//   schema: "javascript",
-//   name: "identifies"
-// });
+declare({
+  database: "tada-analytics",
+  schema: "javascript",
+  name: "identifies"
+});
 
 // Override the sessions and user table type to "table".
 segmentModels.sessions.type("table").config({

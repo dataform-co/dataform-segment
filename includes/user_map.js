@@ -1,4 +1,5 @@
 const crossdb = require("./crossdb");
+const segmentCommon = require("./common");
 
 module.exports = (params) => {
   return publish("segment_user_map", {
@@ -13,26 +14,13 @@ select distinct
   timestamp
 from
   (
-  select
+${segmentCommon.enabledEvents(params).map((event) => 
+`select
     anonymous_id,
     user_id,
     timestamp
   from
-    ${ctx.ref(params.segmentSchema, "tracks")}
-  union all
-  select
-    anonymous_id,
-    user_id,
-    timestamp
-  from
-    ${ctx.ref(params.segmentSchema, "pages")}
-  union all
-  select
-    anonymous_id,
-    user_id,
-    timestamp
-  from
-    ${ctx.ref(params.segmentSchema, "screens")}
+    ${ctx.ref(params.segmentSchema, `${event}s`)}`).join(`\nunion all\n`)}
   union all
   select
     anonymous_id,
