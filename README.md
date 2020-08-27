@@ -35,8 +35,11 @@ segment({
   // list of custom fields to extract from the identifies table
   customUserFields: ["email", "name", "company_name", "created_at"],
   // list of custom fields to extract from the tracks table
-  customerTrackFields: ["browser_type"]
-  
+  customerTrackFields: ["browser_type"],
+  // choose which of tracks, pages and screens to include in the sessionization model
+  includeTracks: true,
+  includePages: true,
+  includeScreens: false,
 });
 ```
 
@@ -48,7 +51,11 @@ This primary outputs of this package are the following data models (configurable
 
 ### `segment_sessions`
 
-Contains a combined view of tracks and pages from segment. Each session is a period of sustained activity, with a new session starting after a 30min+ period of inactivity. Each session contains a repeated field of records which are either tracks or pages. Common fields are extracted out into the top level and type specific fields are kept within two structs: `records.track` and `records.page`.
+Contains a combined view of tracks, pages and screens from segment. Each session is a period of sustained activity, with a new session starting after a 30min+ period of inactivity. Each session contains a repeated field of records which are either tracks or pages. Common fields are extracted out into the top level and type specific fields are kept within two structs: `records.track` and `records.page`.
+
+ - To create a web-only sessions table, use `includeTracks: true, includePages: true, includeScreens: false`
+ - To create an app-only sessions table, use `includeTracks: true, includePages: false, includeScreens: true`
+ - To create a cross-platform sessions table, use `includeTracks: true, includePages: true, includeScreens: true`
 
 ### `segment_users`
 
