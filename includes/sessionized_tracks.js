@@ -2,10 +2,6 @@ const segmentCommon = require("./common");
 
 module.exports = (params) => {
 
-  const customPageFieldsObj = params.customPageFields.reduce((acc, item) => ({...acc, [item]: item }), {});
-
-  const customTrackFieldsObj = params.customTrackFields.reduce((acc, item) => ({...acc, [item]: item }), {});
-
   return publish("segment_sessionized_tracks", {
     ...params.defaultConfig
   }).query(ctx => `
@@ -17,7 +13,7 @@ select
   segment_sessionized_events.track_id,
   segment_sessionized_events.session_index,
   segment_sessionized_events.session_id,
-  ${Object.entries({...segmentCommon.TRACK_FIELDS, ...customTrackFieldsObj}).map(
+  ${Object.entries(segmentCommon.allTrackFields(params)).map(
       ([key, value]) => `segment_track_events.${value}`).join(",\n  ")}
 from 
   ${params.segmentSchema, ctx.ref("segment_sessionized_events")} as segment_sessionized_events

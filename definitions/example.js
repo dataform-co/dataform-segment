@@ -10,12 +10,19 @@ const segmentModels = segment({
   },
   customPageFields: ["url_hash", "category"],
   customUserFields: ["email", "name", "company_name", "created_at"],
+  includeScreens: false
 });
 
 declare({
   database: "tada-analytics",
   schema: "javascript",
   name: "pages"
+});
+
+declare({
+  database: "tada-analytics",
+  schema: "javascript",
+  name: "screens"
 });
 
 declare({

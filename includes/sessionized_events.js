@@ -1,4 +1,5 @@
 const crossdb = require("./crossdb");
+const segmentCommon = require("./common");
 
 module.exports = (params) => {
 
@@ -7,24 +8,16 @@ module.exports = (params) => {
   }).query(ctx => `
 
 with segment_events_combined as (
--- combine page and track tables into a full events table
-select
-  track_events.timestamp,
+-- combine all enabled events tables into one combined events tables
+${segmentCommon.enabledEvents(params).map((event) => 
+`select
+  ${event}_events.timestamp,
   user_id,
   anonymous_id,
-  track_id,
-  null as page_id
+  ${segmentCommon.enabledEvents(params).map((event_id) => 
+  `${event==event_id ? `` : `null as `}${event_id}_id`).join(`,\n  `)}
 from 
-  ${params.segmentSchema, ctx.ref("segment_track_events")} as track_events
-union all
-select
-  page_events.timestamp,
-  user_id,
-  anonymous_id,
-  null as track_id,
-  page_id
-from 
-  ${params.segmentSchema, ctx.ref("segment_page_events")} as page_events
+  ${params.segmentSchema, ctx.ref(`segment_${event}_events`)} as ${event}_events`).join(`\nunion all \n`)}
 ),
 
 segment_events_mapped as (
@@ -36,8 +29,7 @@ select
     segment_user_anonymous_map.user_id,
     segment_events_combined.anonymous_id
   ) as user_id,
-  track_id,
-  page_id
+  ${segmentCommon.enabledEvents(params).map((event) => `${event}_id`).join(`,\n  `)}
 from
   segment_events_combined
   left join ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
