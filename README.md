@@ -56,7 +56,8 @@ Contains a combined view of tracks, pages and screens from segment. Each session
  - To create a web-only sessions table, use `includeTracks: true, includePages: true, includeScreens: false`
  - To create an app-only sessions table, use `includeTracks: true, includePages: false, includeScreens: true`
  - To create a cross-platform sessions table, use `includeTracks: true, includePages: true, includeScreens: true`
-_At least one of inicludeTracks, includePages, or inclueScreens must be set as true
+
+_At least one of inicludeTracks, includePages, or inclueScreens must be set as true_
 
 ### `segment_users`
 
