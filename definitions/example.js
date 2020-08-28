@@ -10,7 +10,9 @@ const segmentModels = segment({
   },
   customPageFields: ["url_hash", "category"],
   customUserFields: ["email", "name", "company_name", "created_at"],
-  includeScreens: false
+  includeScreens: false,
+  includePages: true,
+  includeTracks: true
 });
 
 declare({

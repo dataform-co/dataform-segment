@@ -22,7 +22,7 @@ let TRACK_FIELDS = {
 
 // From here: https://segment.com/docs/connections/spec/screen/
 let SCREEN_FIELDS = {
-  event: "name"
+  name: "name"
 };
 
 function allPageFields(params) {

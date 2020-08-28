@@ -85,11 +85,11 @@ select
   ${segmentCommon.enabledEvents(params).map((event) => 
     `count(segment_sessionized_events.${event}_id) as total_${event}s`).join(`,\n  `)},
   ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
-  ${ctx.when(global.session.config.warehouse == "bigquery", `) as stats`)},
+  ${ctx.when(global.session.config.warehouse == "bigquery", `) as stats`)}
 
   -- first values in the session for page fields
-  ${params.includePages ?
-  `${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  ${params.includePages ? 
+  `, ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries(segmentCommon.allPageFields(params)).map(
       ([key, value]) => `first_and_last_page_values.first_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_page_values`)},
@@ -101,7 +101,7 @@ select
 
   -- first values in the session for screen fields
   ${params.includeScreens ?
-  `${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  `, ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries(segmentCommon.allScreenFields(params)).map(
       ([key, value]) => `first_and_last_screen_values.first_${value}`).join(",\n  ")}
   ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_screen_values`)},
