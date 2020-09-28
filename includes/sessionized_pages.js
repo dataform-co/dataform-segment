@@ -2,6 +2,8 @@ const segmentCommon = require("./common");
 
 module.exports = (params) => {
 
+
+  
   return publish("segment_sessionized_pages", {
     ...params.defaultConfig
   }).query(ctx => `
