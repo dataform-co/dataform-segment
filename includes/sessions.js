@@ -81,38 +81,38 @@ select
   max(segment_sessionized_events.timestamp) as session_end_timestamp,
   
   -- stats about the session
-  ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${segmentCommon.enabledEvents(params).map((event) => 
     `count(segment_sessionized_events.${event}_id) as total_${event}s`).join(`,\n  `)},
   ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
-  ${ctx.when(global.session.config.warehouse == "bigquery", `) as stats`)}
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as stats`)}
 
   -- first values in the session for page fields
   ${params.includePages ? 
-  `, ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  `, ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries(segmentCommon.allPageFields(params)).map(
       ([key, value]) => `first_and_last_page_values.first_${value}`).join(",\n  ")}
-  ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_page_values`)},
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as first_page_values`)},
   -- last values in the session for page fields
-  ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries(segmentCommon.allPageFields(params)).map(
       ([key, value]) => `first_and_last_page_values.last_${value}`).join(",\n  ")}
-  ${ctx.when(global.session.config.warehouse == "bigquery", `) as last_page_values`)}` : `` }
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as last_page_values`)}` : `` }
 
   -- first values in the session for screen fields
   ${params.includeScreens ?
-  `, ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  `, ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries(segmentCommon.allScreenFields(params)).map(
       ([key, value]) => `first_and_last_screen_values.first_${value}`).join(",\n  ")}
-  ${ctx.when(global.session.config.warehouse == "bigquery", `) as first_screen_values`)},
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as first_screen_values`)},
   -- last values in the session for screen fields
-  ${ctx.when(global.session.config.warehouse == "bigquery", `struct(\n  `)}
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${Object.entries(segmentCommon.allScreenFields(params)).map(
       ([key, value]) => `first_and_last_screen_values.last_${value}`).join(",\n  ")}
-  ${ctx.when(global.session.config.warehouse == "bigquery", `) as last_screen_values`)}` : `` }
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as last_screen_values`)}` : `` }
 
 
-  ${ctx.when(global.session.config.warehouse == "bigquery", `-- repeated array of records
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `-- repeated array of records
   ,array_agg(
     struct(
       segment_sessionized_events.timestamp
@@ -148,7 +148,7 @@ from
   ${params.includeScreens ? 
   `left join first_and_last_screen_values
     using(session_id)` : ``}
-  ${ctx.when(global.session.config.warehouse == "bigquery",
+  ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery",
   segmentCommon.enabledEvents(params).map((event) => 
     `left join ${ctx.ref(params.defaultConfig.schema, `segment_sessionized_${event}s`)} as segment_sessionized_${event}s
     using(${event}_id)`).join(`\n  `))}
