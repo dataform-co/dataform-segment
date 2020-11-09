@@ -1,4 +1,4 @@
-const crossdb = require("./crossdb");
+const sql = require("@dataform/sql")();
 const segmentCommon = require("./common");
 
 module.exports = (params) => {
@@ -33,14 +33,16 @@ ${segmentCommon.enabledEvents(params).map((event) =>
 
 select distinct
   anonymous_id,
-  ${crossdb.windowFunction({
-        func: "last_value",
-        value: "user_id",
-        ignore_nulls: false,
-        partition_fields: "anonymous_id",
-        order_fields: "anonymous_id_user_id_pairs.timestamp asc",
-        frame_clause: "rows between unbounded preceding and unbounded following"
-      })} as user_id
+  ${sql.windowFunction(
+        "last_value",
+        "user_id",
+        false,
+        {
+          partitionFields: ["anonymous_id"],
+          orderFields: ["anonymous_id_user_id_pairs.timestamp asc"],
+          frameClause: "rows between unbounded preceding and unbounded following"
+        }
+      )} as user_id
 from
   anonymous_id_user_id_pairs
 where
