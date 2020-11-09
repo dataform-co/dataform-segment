@@ -1,4 +1,4 @@
-const crossdb = require("./crossdb");
+const sql = require("@dataform/sql")();
 
 let USER = `coalesce(
   identifies.user_id,
@@ -21,23 +21,27 @@ module.exports = (params) => {
 
 select distinct
   ${USER} as user_id,
-  ${crossdb.windowFunction({
-        func: "first_value",
-        value: "identifies.timestamp",
-        ignore_nulls: true,
-        partition_fields: USER,
-        order_fields: "identifies.timestamp asc",
-        frame_clause: "rows between unbounded preceding and unbounded following",
-      })} as first_seen_at
+  ${sql.windowFunction(
+        "first_value",
+        "identifies.timestamp",
+        true,
+        {
+          partitionFields: [USER],
+          orderFields: ["identifies.timestamp asc"],
+          frameClause: "rows between unbounded preceding and unbounded following"
+        }
+      )} as first_seen_at
   ${params.customUserFields.length ? `,` : ``}
-  ${params.customUserFields.map(f => `${crossdb.windowFunction({
-        func: "first_value",
-        value: f,
-        ignore_nulls: true,
-        partition_fields: USER,
-        order_fields: "identifies.timestamp desc",
-        frame_clause: "rows between unbounded preceding and unbounded following",
-      })} as ${f}`).join(",\n  ")}
+  ${params.customUserFields.map(f => `${sql.windowFunction(
+        "first_value",
+        f,
+        true,
+        {
+          partitionFields: [USER],
+          orderFields: ["identifies.timestamp desc"],
+          frameClause: "rows between unbounded preceding and unbounded following",
+        }
+      )} as ${f}`).join(",\n  ")}
 from
   ${ctx.ref(params.defaultConfig.schema, "segment_user_map")} as segment_user_anonymous_map
   left join ${ctx.ref(params.segmentSchema, "identifies")} as identifies

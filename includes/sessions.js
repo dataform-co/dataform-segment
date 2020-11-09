@@ -1,5 +1,5 @@
 const segmentCommon = require("./common");
-const crossdb = require("./crossdb");
+const sql = require("@dataform/sql")();
 
 module.exports = (params) => {
 
@@ -24,23 +24,27 @@ ${params.includePages ?
 select distinct
   session_id,
   ${Object.entries(segmentCommon.allPageFields(params)).map(
-      ([key, value]) => `${crossdb.windowFunction({
-        func: "first_value",
-        value: value,
-        ignore_nulls: false,
-        partition_fields: "session_id",
-        order_fields: 'sessionized_pages.timestamp asc',
-        frame_clause: "rows between unbounded preceding and unbounded following",
-      })} as first_${value}`).join(",\n  ")},
+      ([key, value]) => `${sql.windowFunction(
+      "first_value",
+        value,
+        false,
+        {
+          partitionFields: ["session_id"],
+          orderFields: ['sessionized_pages.timestamp asc'],
+          frameClause: "rows between unbounded preceding and unbounded following"
+        }
+      )} as first_${value}`).join(",\n  ")},
   ${Object.entries(segmentCommon.allPageFields(params)).map(
-      ([key, value]) => `${crossdb.windowFunction({
-        func: "last_value",
-        value: value,
-        ignore_nulls: false,
-        partition_fields: "session_id",
-        order_fields: 'sessionized_pages.timestamp asc',
-        frame_clause: "rows between unbounded preceding and unbounded following",
-      })} as last_${value}`).join(",\n  ")}
+      ([key, value]) => `${sql.windowFunction(
+      "last_value",
+        value,
+        false,
+        {
+          partitionFields: ["session_id"],
+          orderFields: ['sessionized_pages.timestamp asc'],
+          frameClause: "rows between unbounded preceding and unbounded following"
+        }
+      )} as last_${value}`).join(",\n  ")}
   from
     ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_pages")} as sessionized_pages
   ),` : ``}
@@ -50,23 +54,27 @@ ${params.includeScreens ?
 select distinct
   session_id,
   ${Object.entries(segmentCommon.allScreenFields(params)).map(
-      ([key, value]) => `${crossdb.windowFunction({
-        func: "first_value",
-        value: value,
-        ignore_nulls: false,
-        partition_fields: "session_id",
-        order_fields: 'sessionized_screens.timestamp asc',
-        frame_clause: "rows between unbounded preceding and unbounded following",
-      })} as first_${value}`).join(",\n  ")},
+      ([key, value]) => `${sql.windowFunction(
+      "first_value",
+        value,
+        false,
+        {
+          partitionFields: ["session_id"],
+          orderFields: ['sessionized_screens.timestamp asc'],
+          frameClause: "rows between unbounded preceding and unbounded following"
+        }
+      )} as first_${value}`).join(",\n  ")},
   ${Object.entries(segmentCommon.allScreenFields(params)).map(
-      ([key, value]) => `${crossdb.windowFunction({
-        func: "last_value",
-        value: value,
-        ignore_nulls: false,
-        partition_fields: "session_id",
-        order_fields: 'sessionized_screens.timestamp asc',
-        frame_clause: "rows between unbounded preceding and unbounded following",
-      })} as last_${value}`).join(",\n  ")}
+      ([key, value]) => `${sql.windowFunction(
+      "last_value",
+        value,
+        false,
+        {
+          partitionFields: ["session_id"],
+          orderFields: ['sessionized_screens.timestamp asc'],
+          frameClause: "rows between unbounded preceding and unbounded following"
+        }
+      )} as last_${value}`).join(",\n  ")}
   from
     ${ctx.ref(params.defaultConfig.schema, "segment_sessionized_screens")} as sessionized_screens
   ),` : ``}
@@ -84,7 +92,7 @@ select
   ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${segmentCommon.enabledEvents(params).map((event) => 
     `count(segment_sessionized_events.${event}_id) as total_${event}s`).join(`,\n  `)},
-  ${crossdb.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
+  ${sql.timestamps.diff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
   ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as stats`)}
 
   -- first values in the session for page fields

@@ -1,4 +1,4 @@
-const crossdb = require("./crossdb");
+const sql = require("@dataform/sql")();
 const segmentCommon = require("./common");
 
 module.exports = (params) => {
@@ -42,16 +42,18 @@ select
   *,
   coalesce(
     (
-      ${crossdb.timestampDiff(`millisecond`,
-      crossdb.windowFunction({
-        func: "lag",
-        value: "timestamp",
-        ignore_nulls: false,
-        partition_fields: "user_id",
-        order_fields: "timestamp asc",
-        frame_clause: " " // supplying empty frame clause as frame clause is not valid for a lag
-      }),
-      `segment_events_mapped.timestamp`
+      ${sql.timestamps.diff(`millisecond`,
+      sql.windowFunction(
+      "lag",
+        "timestamp",
+        false,
+        {
+          partitionFields: ["user_id"],
+          orderFields: ["timestamp asc"]
+        }
+      ),
+      `
+    segment_events_mapped.timestamp `
       )}
     ) >= ${params.sessionTimeoutMillis},
     true
@@ -64,14 +66,16 @@ with_session_index as (
 -- add a session_index (users first session = 1, users second session = 2 etc)
 select
   *,
-  ${crossdb.windowFunction({
-        func: "sum",
-        value: "case when session_start_event then 1 else 0 end",
-        ignore_nulls: false,
-        partition_fields: "user_id",
-        order_fields: 'session_starts.timestamp asc',
-        frame_clause: "rows between unbounded preceding and current row"
-      })} as session_index
+  ${sql.windowFunction(
+      "sum",
+        "case when session_start_event then 1 else 0 end",
+        false,
+        {
+        partitionFields: ["user_id"],
+        orderFields: ['session_starts.timestamp asc'],
+        frameClause: "rows between unbounded preceding and current row"
+        }
+    )} as session_index
 from
   session_starts
 )
@@ -79,7 +83,7 @@ from
 -- add a unique session_id to each session
 select
   *,
-  ${crossdb.generateSurrogateKey(["session_index", "user_id"])} as session_id
+  ${sql.surrogateKey(["session_index", "user_id"])} as session_id
 from
   with_session_index
 
