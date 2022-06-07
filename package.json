@@ -1,4 +1,5 @@
 {
+    "name": "dataform-segment",
     "dependencies": {
         "@dataform/core": "1.15.5",
         "@dataform/sql": "0.2.0"
