@@ -1,4 +1,4 @@
-const sql = require("@dataform/sql")();
+const sql = require("./sql")
 const segmentCommon = require("./common");
 
 module.exports = (params) => {
@@ -42,7 +42,7 @@ select
   *,
   coalesce(
     (
-      ${sql.timestamps.diff(`millisecond`,
+      ${sql.timestampDiff(`millisecond`,
       sql.windowFunction(
       "lag",
         "timestamp",
