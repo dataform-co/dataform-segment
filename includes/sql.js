@@ -105,13 +105,21 @@ const windowFunction = (
   }
 };
 
+const asString = (castableToString) => {
+  const dialect = getDialect();
+  if (dialect === "postgres" || dialect === "redshift") {
+    return `cast(${castableToString} as varchar)`;
+  }
+  return `cast(${castableToString} as string)`;
+};
+
 const surrogateKey = (columnNames) => {
   const dialect = getDialect();
-  const columnsAsStrings = columnNames.map((id) => this.asString(id)).join(`,`);
+  const columnsAsStrings = columnNames.map((id) => asString(id)).join(`,`);
   if (dialect === "standard") {
-    return this.asString(`farm_fingerprint(concat(${columnsAsStrings}))`);
+    return asString(`farm_fingerprint(concat(${columnsAsStrings}))`);
   }
-  return this.asString(`md5(concat(${columnsAsStrings}))`);
+  return asString(`md5(concat(${columnsAsStrings}))`);
 };
 
 module.exports = {
