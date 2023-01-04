@@ -1,4 +1,4 @@
-const sql = require("@dataform/sql")();
+const sql = require("./sql")
 const segmentCommon = require("./common");
 
 module.exports = (params) => {

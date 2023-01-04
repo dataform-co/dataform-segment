@@ -1,5 +1,5 @@
 const segmentCommon = require("./common");
-const sql = require("@dataform/sql")();
+const sql = require("./sql")
 
 module.exports = (params) => {
 
@@ -92,7 +92,7 @@ select
   ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `struct(\n  `)}
   ${segmentCommon.enabledEvents(params).map((event) => 
     `count(segment_sessionized_events.${event}_id) as total_${event}s`).join(`,\n  `)},
-  ${sql.timestamps.diff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
+  ${sql.timestampDiff("millisecond", "min(segment_sessionized_events.timestamp)", "max(segment_sessionized_events.timestamp)")} as duration_millis
   ${ctx.when(global.dataform.projectConfig.warehouse == "bigquery", `) as stats`)}
 
   -- first values in the session for page fields

@@ -1,4 +1,4 @@
-const sql = require("@dataform/sql")();
+const sql = require("./sql")
 
 let USER = `coalesce(
   identifies.user_id,
